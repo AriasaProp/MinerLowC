@@ -43,7 +43,7 @@ case "$1" in
         fi
         git add .
         git commit -m "$commit_message"
-        if [ -z $? ]; then
+        if [ -n $? ]; then
           git push
         else
           echo "Nothing is changed."
