@@ -22,7 +22,7 @@ case "$1" in
         ;;
     "update")
         git status --porcelain
-        if [ -n $? ]; then
+        if [ -z $? ]; then
           echo "There changes to deal before update."
           exit 1
         fi
