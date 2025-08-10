@@ -39,7 +39,7 @@ case "$1" in
         fi
         git add .
         git commit -m "$commit_message"
-        if [ $? -eq 0 ]; then
+        if [ ! $? -eq 0 ]; then
           echo "trigger"
         fi
         ;;
