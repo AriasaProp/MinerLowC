@@ -1,0 +1,6 @@
+
+1
+Hello world! Let's try to encrypt an algorithm.
+This is an example of a message encrypted with a certain algorithm.
+This encryption method was created with a text generator.
+Hopefully, this will work as we all expect.
