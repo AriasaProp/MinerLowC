@@ -20,6 +20,14 @@ case "$1" in
         cmake .
         cmake --build .
         ;;
+    "update")
+        git status --porcelain
+        if [ ! $? -eq 0]; then
+          echo "There changes to deal before update."
+          exit 1
+        fi
+        git pull
+        ;;
     "upload")
         echo "Upload changes to github repository."
         # check position is in valid git repository
@@ -27,12 +35,12 @@ case "$1" in
           echo "This is currently not git repository. Return now"
           exit 1
         fi
-        # if there is no second arguments
-        if [ -z $2 ]; then
+        # if there is a second arguments
+        if [ -n $2 ]; then
+          commit_message=$2
+        else
           # ask for comment
           read -p "Commit message: " commit_message
-        else
-          commit_message=$2
         fi
         if [ -z $commit_message ]; then
           commit_message="Update repository at $(date '+%x %R')"
@@ -40,9 +48,14 @@ case "$1" in
         git add .
         git commit -m "$commit_message"
         if [ $? -eq 0 ]; then
-          echo "trigger"
+          git push --set-upstream origin main
+        else
+          echo "Nothing is changed."
+          exit 1
         fi
+        echo "Changes uploaded"
         ;;
+        
     *)
         echo "Invalid command."
         ;;
