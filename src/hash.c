@@ -1,37 +1,32 @@
 #define HASH_IMPLEMENTS
 #include "hash.h"
 
-// hex    ... adb45100724
+// hex    ad b4 51 00 72 4f ...
 // byte   ... 00110100111
 
-void bytesToHex(char *out, const uint8_t *in, size_t bit) {
-  size_t i, j;
+//  01 02 03 04 05
+void hexToBytes(uint8_t *out, const char *in, const size_t bit) {
+  const char *cin = in;
+  for (uint8_t *bout = out, *bend = out + (bit >> 3); bout < bend; ++bout) {
+    *bout = *cin - '0' + ((*cin >= 'A') * ('0' - 'A' + 0xa)) + ((*cin >= 'a') * ('A' - 'a'));
+    ++cin;
+    *bout <<= 4;
+    *bout |= *cin - '0' + ((*cin >= 'A') * ('0' - 'A' + 0xa)) + ((*cin >= 'a') * ('A' - 'a'));
+    ++cin;
+  }
+}
+void bytesToHex(char *out, const uint8_t *in, const size_t bit) {
   uint8_t t;
   char *cout = out;
-  for (i = 0, j = bit >> 3; i < j; ++i) {
-    t = (in[i] >> 4) & 0xf;
-    *(cout++) = t + '0' + ((t > 0x9) * ('A' - '0' - 0xa));
-    t = in[i] & 0xf;
-    *(cout++) = t + '0' + ((t > 0x9) * ('A' - '0' - 0xa));
+  for (const uint8_t *bin = in, *bend = in + (bit >> 3); bin < bend; ++bin) {
+    t = *bin >> 4;
+    *cout = t + '0' + ((t > 0x9) * ('A' - '0' - 0xa));
+    ++cout;
+    t = *bin & 0xf;
+    *cout = t + '0' + ((t > 0x9) * ('A' - '0' - 0xa));
+    ++cout;
   }
 }
-
-void hexToBytes(uint8_t *out, const char *in, size_t bit) {
-  size_t i, j;
-  const char *cin = in;
-  for (i = 0, j = bit >> 3; i < j; ++i) {
-    out[i] = *cin - '0' + ((*cin >= 'A') * ('0' - 'A' + 0xa)) + ((*cin >= 'a') * ('A' - 'a'));
-    ++cin;
-    out[i] <<= 4;
-    out[i] |= *cin - '0' + ((*cin >= 'A') * ('0' - 'A' + 0xa)) + ((*cin >= 'a') * ('A' - 'a'));
-    ++cin;
-  }
-}
-// xor swap
-// x ^= y, y ^= x, x ^= y
-// x -> a^b, y -> b
-// x -> a^b, y -> a
-// x -> b  , y -> a
 
 // re-arrange 4 byte that flip each byte
 void bswap32(uint32_t *pp) {
@@ -52,4 +47,11 @@ uint32_t rotr32(const uint32_t x, const size_t n) {
 #else
   return (x >> n) | (x << (32 - n));
 #endif
+}
+void flip64bytes(uint8_t *p) {
+  for (int i = 0; i < 16; ++i) {
+    p[i] ^= p[31 - i];
+    p[31 - i] ^= p[i];
+    p[i] ^= p[31 - i];
+  }
 }

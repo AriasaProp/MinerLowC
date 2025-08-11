@@ -45,8 +45,9 @@ typedef unsigned __int64 size_t;
 #error Unknown compiler
 #endif
 
-#define MAX(X, Y)      ((X > Y) ? (X) : (Y))
-#define MIN(X, Y)      ((X < Y) ? (X) : (Y))
-#define CLAMP(X, Y, Z) ((X < Z) ? ((Y > Z) ? (Z) : (Y)) : (X))
+#define IMAX(x, y) x ^ ((x ^ y) & -(x < y))
+#define IMIN(x, y) y ^ ((x ^ y) & -(x < y))
+#define ICLAMP(x, y, z) (x ^ ((x ^ z ^ ((y ^ z) & -(y < z))) & -(x < (z ^ ((y ^ z) & -(y < z))))))
+
 
 #endif // COMMON_INCLUDED_
